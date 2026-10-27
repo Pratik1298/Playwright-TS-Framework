@@ -1,25 +1,18 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../src/pages/HomePage';
+import { test, expect } from '../../src/fixtures';
+import { DEFAULT_PRODUCT } from '../../src/utils/testData';
 
 test.describe('Home page', () => {
-  let home: HomePage;
-
-  test.beforeEach(async ({ page }) => {
-    home = new HomePage(page);
-    await home.goto();
-  });
-
-  test('opens on the base URL', async ({ page, baseURL }) => {
+  test('opens on the base URL', async ({ homePage, page, baseURL }) => {
     await expect(page).toHaveURL(`${baseURL}/`);
   });
 
-  test('shows the logo', async () => {
-    await expect(home.logo).toBeVisible();
+  test('shows the logo', async ({ homePage }) => {
+    await expect(homePage.logo).toBeVisible();
   });
- 
-  test('search finds Combination Pliers', async () => {
-    await expect(home.searchBox).toBeVisible();
-    await home.searchFor('Combination Pliers');
-    await expect(home.productCard('Combination Pliers')).toBeVisible();
+
+  test('search finds Combination Pliers', async ({ homePage }) => {
+    await expect(homePage.searchBox).toBeVisible();
+    await homePage.searchFor(DEFAULT_PRODUCT);
+    await expect(homePage.productCard(DEFAULT_PRODUCT)).toBeVisible();
   });
 });

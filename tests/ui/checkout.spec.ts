@@ -1,34 +1,19 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../src/pages/HomePage';
-import type { CheckoutPage } from '../../src/pages/CheckoutPage';
+import { test, expect } from '../../src/fixtures';
+import { DEFAULT_PRODUCT } from '../../src/utils/testData';
 import type { Address } from '../../src/models/Address';
 
-const PRODUCT = 'Combination Pliers';
-
 test.describe('Checkout', () => {
-  let checkout: CheckoutPage;
-
-  test.beforeEach(async ({ page }) => {
-    const home = new HomePage(page);
-    await home.goto();
-    await home.searchFor(PRODUCT);
-    const product = await home.openProduct(PRODUCT);
-    await product.addToCart();
-    await expect(product.cartCount).toHaveText('1');
-    checkout = await product.openCart();
+    test('cart shows the added product', async ({ checkoutPage, productName }) => {
+    await expect(checkoutPage.cartProductTitle).toContainText(productName);
+    await expect(checkoutPage.productPrice).toBeVisible();
+    await expect(checkoutPage.linePrice).toBeVisible();
+    await expect(checkoutPage.continueShoppingButton).toBeVisible();
   });
 
-  test('cart shows the added product', async () => {
-    await expect(checkout.cartProductTitle).toContainText(PRODUCT);
-    await expect(checkout.productPrice).toBeVisible();
-    await expect(checkout.linePrice).toBeVisible();
-    await expect(checkout.continueShoppingButton).toBeVisible();
-  });
-
-  test('guest checkout reaches the payment step', async () => {
-    await checkout.proceedToCheckout();
-    await checkout.continueAsGuest('pratik.test@example.com', 'Pratik', 'Bhosale');
-    await checkout.proceedAsGuest();
+  test('guest checkout reaches the payment step', async ({ checkoutPage }) => {
+    await checkoutPage.proceedToCheckout();
+    await checkoutPage.continueAsGuest('pratik.test@example.com', 'Pratik', 'Bhosale');
+    await checkoutPage.proceedAsGuest();
 
     const address: Address = {
       country: 'Ireland',
@@ -38,10 +23,10 @@ test.describe('Checkout', () => {
       city: 'Athlone',
       state: 'Westmeath',
     };
-    await checkout.fillBillingAddress(address);
+    await checkoutPage.fillBillingAddress(address);
 
-    await expect(checkout.proceedToPaymentButton).toBeEnabled();
-    await checkout.proceedToPayment();
-    await expect(checkout.paymentMethod).toBeVisible();
+    await expect(checkoutPage.proceedToPaymentButton).toBeEnabled();
+    await checkoutPage.proceedToPayment();
+    await expect(checkoutPage.paymentMethod).toBeVisible();
   });
 });

@@ -7,6 +7,7 @@ export class HomePage {
   readonly searchBox: Locator;
   readonly searchButton: Locator;
   private readonly productCards: Locator;
+  private readonly inStockCards: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +15,7 @@ export class HomePage {
     this.searchBox = page.getByTestId('search-query');
     this.searchButton = page.getByTestId('search-submit');
     this.productCards = page.locator('a.card');
+    this.inStockCards = this.productCards.filter({ hasNot: page.getByTestId('out-of-stock') });
   }
 
   async goto(): Promise<void> {
@@ -26,12 +28,18 @@ export class HomePage {
   }
 
   productCard(productName: string): Locator {
-    return this.productCards.filter({ hasText: productName }).first();
+    return this.productCards
+      .filter({ has: this.page.getByTestId('product-name').getByText(productName, { exact: true }) })
+      .first();
   }
-  
-    async openProduct(productName: string): Promise<ProductPage> {
+
+  async firstInStockProductName(): Promise<string> {
+    const name = await this.inStockCards.first().getByTestId('product-name').innerText();
+    return name.trim();
+  }
+
+  async openProduct(productName: string): Promise<ProductPage> {
     await this.productCard(productName).click();
     return new ProductPage(this.page);
   }
-
 }
