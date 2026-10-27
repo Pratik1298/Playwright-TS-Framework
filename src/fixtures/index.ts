@@ -6,6 +6,7 @@ import type { APIRequestContext } from '@playwright/test';
 import { UserApi } from '../api/UserApi';
 import { ProductApi } from '../api/ProductApi';
 import { API_URL } from '../utils/env';
+import { BrandApi } from '../api/BrandApi';
 
 type PageFixtures = {
   homePage: HomePage;
@@ -18,6 +19,7 @@ type ApiFixtures = {
   apiContext: APIRequestContext;
   userApi: UserApi;
   productApi: ProductApi;
+  brandApi: BrandApi;
 };
 
 export const test = base.extend<PageFixtures & ApiFixtures>({
@@ -59,6 +61,10 @@ export const test = base.extend<PageFixtures & ApiFixtures>({
 
   productApi: async ({ apiContext }, use) => {
     await use(new ProductApi(apiContext));
+  },
+
+  brandApi: async ({ apiContext }, use) => {
+    await use(new BrandApi(apiContext));
   },
 });
 

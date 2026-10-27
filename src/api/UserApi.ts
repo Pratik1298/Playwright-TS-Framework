@@ -1,6 +1,7 @@
 import type { APIResponse } from '@playwright/test';
 import { BaseApi } from './BaseApi';
 import type { LoginRequest, LoginResponse } from '../models/api';
+import type { RegisterRequest } from '../models/api';
 
 export class UserApi extends BaseApi {
   login(credentials: LoginRequest): Promise<APIResponse> {
@@ -18,5 +19,8 @@ export class UserApi extends BaseApi {
 
   getProfile(): Promise<APIResponse> {
     return this.get('/users/me');
+  }
+  register(user: RegisterRequest): Promise<APIResponse> {
+    return this.post('/users/register', user);
   }
 }
