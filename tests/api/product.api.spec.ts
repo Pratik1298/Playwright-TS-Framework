@@ -46,12 +46,12 @@ test.describe('Products API', () => {
     expect(fetched.category.id).toBe(reference.category.id);
   });
 
-  test('PATCH /products/{id} changes only the price', async ({ productApi }) => {
+    test('PATCH /products/{id} changes only the price', async ({ productApi }) => {
     const reference = await referenceProduct(productApi);
     const name = `PW Patch Target ${uniqueSuffix()}`;
-    const created = (await (await productApi.createProduct(
-      productRequestFrom(reference, name, 10),
-    )).json()) as Product;
+    const createResponse = await productApi.createProduct(productRequestFrom(reference, name, 10));
+    expect(createResponse.status(), `Setup failed: ${await createResponse.text()}`).toBe(201);
+    const created = (await createResponse.json()) as Product;
 
     const response = await productApi.patchProduct(created.id, { price: 19.99 });
 

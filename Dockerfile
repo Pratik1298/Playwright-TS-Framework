@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/playwright:v1.64.0-noble
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+ENV CI=true
+
+CMD ["npx", "playwright", "test"]
